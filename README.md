@@ -1,4 +1,4 @@
-# Mango-GPT-Beta
+
 # 🥭 Mango GPT
 
 Mango GPT is a fun AI chatbot with a mango personality.
