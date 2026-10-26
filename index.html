@@ -1,181 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mango GPT 🥭</title>
-
-<style>
-body{
-    margin:0;
-    font-family:Arial,sans-serif;
-    background:linear-gradient(135deg,#ffae42,#ffd75e);
-}
-
-.header{
-    background:#ff8c00;
-    color:white;
-    text-align:center;
-    padding:20px;
-    font-size:32px;
-    font-weight:bold;
-}
-
-.subtitle{
-    font-size:14px;
-    margin-top:5px;
-}
-
-.chat{
-    height:70vh;
-    overflow-y:auto;
-    padding:15px;
-}
-
-.bot{
-    background:white;
-    padding:12px;
-    border-radius:15px;
-    margin:10px;
-    max-width:75%;
-}
-
-.user{
-    background:#d4ffd4;
-    padding:12px;
-    border-radius:15px;
-    margin:10px;
-    margin-left:auto;
-    width:fit-content;
-    max-width:75%;
-}
-
-.bottom{
-    position:fixed;
-    bottom:0;
-    left:0;
-    width:100%;
-    display:flex;
-    background:white;
-}
-
-input{
-    flex:1;
-    padding:15px;
-    font-size:18px;
-    border:none;
-}
-
-button{
-    background:#28a745;
-    color:white;
-    border:none;
-    padding:15px 25px;
-    font-size:18px;
-    cursor:pointer;
-}
-</style>
+    <title>Mango GPT 🥭</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
 <div class="header">
-🥭 Mango GPT
-<div class="subtitle">
-Smart enough to help. Honest enough to say "Shiiiii idk."
-</div>
+    🥭 Mango GPT
 </div>
 
-<div class="chat" id="chat">
-    <div class="bot">
-        👋 Yo! I'm Mango GPT 🥭<br>
-        Ask me anything!
-    </div>
-</div>
+<div id="chat"></div>
 
 <div class="bottom">
-    <input id="question" placeholder="Ask Mango GPT...">
-    <button onclick="askQuestion()">Ask</button>
+    <input id="question" placeholder="Ask Mango GPT">
+    <button onclick="ask()">Ask</button>
 </div>
 
-<script>
-
-function getAnswer(q){
-
-q = q.toLowerCase();
-
-if(
-q.includes("quantum") ||
-q.includes("string theory") ||
-q.includes("advanced calculus")
-){
-return "Shiiiii idk 🤷🥭";
-}
-
-if(q.includes("hello") || q.includes("hi")){
-return "What's good? 😎🥭";
-}
-
-if(q.includes("your name")){
-return "I'm Mango GPT 🥭";
-}
-
-if(q.includes("joke")){
-return "Why did the mango become a programmer? Because it liked branching out! 🥭😂";
-}
-
-if(q.includes("gravity")){
-return "Gravity pulls things together.";
-}
-
-if(q.includes("sun")){
-return "The Sun is a star.";
-}
-
-if(q.includes("earth")){
-return "Earth is the planet we live on.";
-}
-
-if(q.includes("capital of france")){
-return "Paris 🇫🇷";
-}
-
-if(q.includes("2+2")){
-return "4 😎";
-}
-
-return "🤔 I'm still learning. My mango guess is that it's about: " + q;
-}
-
-function askQuestion(){
-
-let input = document.getElementById("question");
-let question = input.value.trim();
-
-if(question === ""){
-return;
-}
-
-let chat = document.getElementById("chat");
-
-chat.innerHTML += '<div class="user">' + question + '</div>';
-
-let answer = getAnswer(question);
-
-chat.innerHTML += '<div class="bot">' + answer + '</div>';
-
-input.value = "";
-
-chat.scrollTop = chat.scrollHeight;
-}
-
-document.getElementById("question").addEventListener("keydown", function(event){
-if(event.key === "Enter"){
-askQuestion();
-}
-});
-
-</script>
-
+<script src="app.js"></script>
 </body>
 </html>
