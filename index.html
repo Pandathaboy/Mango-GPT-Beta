@@ -1,16 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mango GPT 🥭</title>
+<title>🥭 Mango GPT</title>
 
 <style>
 body{
     margin:0;
     font-family:Arial,sans-serif;
-    background:linear-gradient(135deg,#ffae42,#ffd75e);
-    min-height:100vh;
+    background:linear-gradient(135deg,#ffb347,#ffd54f);
 }
 
 .header{
@@ -18,20 +17,14 @@ body{
     color:white;
     text-align:center;
     padding:20px;
-    font-size:32px;
+    font-size:30px;
     font-weight:bold;
-}
-
-.subtitle{
-    font-size:14px;
-    margin-top:5px;
-    font-weight:normal;
 }
 
 .chat{
     height:70vh;
     overflow-y:auto;
-    padding:15px 15px 90px 15px;
+    padding:15px;
 }
 
 .bot{
@@ -40,8 +33,6 @@ body{
     border-radius:15px;
     margin:10px;
     max-width:75%;
-    width:fit-content;
-    word-wrap:break-word;
 }
 
 .user{
@@ -52,13 +43,11 @@ body{
     margin-left:auto;
     width:fit-content;
     max-width:75%;
-    word-wrap:break-word;
 }
 
 .bottom{
     position:fixed;
     bottom:0;
-    left:0;
     width:100%;
     display:flex;
     background:white;
@@ -69,7 +58,6 @@ input{
     padding:15px;
     font-size:18px;
     border:none;
-    outline:none;
 }
 
 button{
@@ -78,151 +66,103 @@ button{
     border:none;
     padding:15px 25px;
     font-size:18px;
-    cursor:pointer;
-}
-
-button:disabled{
-    background:#999;
-    cursor:not-allowed;
 }
 </style>
-</head>
 
+</head>
 <body>
 
 <div class="header">
 🥭 Mango GPT
-<div class="subtitle">
-Smart enough to help. Honest enough to say "Shiiiii idk."
-</div>
 </div>
 
 <div class="chat" id="chat">
-    <div class="bot">
-        👋 Yo! I'm Mango GPT 🥭<br>
-        Ask me anything!
-    </div>
+
+<div class="bot">
+👋 Yo! I'm Mango GPT.
+
+Ask me anything!
+</div>
+
 </div>
 
 <div class="bottom">
-    <input id="question" placeholder="Ask Mango GPT..." autocomplete="off">
-    <button id="askBtn" onclick="askQuestion()">Ask</button>
+<input id="question" placeholder="Ask Mango GPT...">
+<button onclick="askQuestion()">Ask</button>
 </div>
 
 <script>
 
-const WORKER_URL = "https://mango-gpt-worker.harrybrine54.workers.dev";
+async function askQuestion() {
 
-// Offline answers (used if the worker fails)
-function getAnswer(q){
+const input =
+document.getElementById("question");
 
-    q = q.toLowerCase();
+const question =
+input.value.trim();
 
-    if(
-        q.includes("quantum") ||
-        q.includes("string theory") ||
-        q.includes("advanced calculus")
-    ){
-        return "Shiiiii idk 🤷🥭";
-    }
+if(question === "") return;
 
-    if(/\b(hi|hello|hey)\b/.test(q)){
-        return "What's good? 😎🥭";
-    }
+const chat =
+document.getElementById("chat");
 
-    if(q.includes("your name")){
-        return "I'm Mango GPT 🥭";
-    }
+chat.innerHTML +=
+`<div class="user">${question}</div>`;
 
-    if(q.includes("joke")){
-        return "Why did the mango become a programmer? Because it liked branching out! 🥭😂";
-    }
+chat.innerHTML +=
+`<div class="bot">🔍 Searching...</div>`;
 
-    if(q.includes("gravity")){
-        return "Gravity pulls things together.";
-    }
+chat.scrollTop = chat.scrollHeight;
 
-    if(q.includes("sun")){
-        return "The Sun is a star.";
-    }
+try {
 
-    if(q.includes("earth")){
-        return "Earth is the planet we live on.";
-    }
+const response = await fetch(
+"https://mango-gpt-worker.harrybrine54.workers.dev",
+{
+method: "POST",
+headers: {
+"Content-Type": "application/json"
+},
+body: JSON.stringify({
+question: question
+})
+}
+);
 
-    if(q.includes("capital of france")){
-        return "Paris 🇫🇷";
-    }
+const data =
+await response.json();
 
-    if(q.includes("2+2")){
-        return "4 😎";
-    }
+const bots =
+document.querySelectorAll(".bot");
 
-    return "🤔 I'm still learning. My mango guess is that it's about: " + q;
+bots[bots.length - 1].innerHTML =
+data.answer;
+
+}
+catch(error){
+
+const bots =
+document.querySelectorAll(".bot");
+
+bots[bots.length - 1].innerHTML =
+"Shiiiii idk 🤷🥭";
+
 }
 
-// Safely add a message bubble (no HTML injection)
-function addMessage(text, type){
-    const chat = document.getElementById("chat");
-    const div = document.createElement("div");
-    div.className = type;
-    div.textContent = text;
-    chat.appendChild(div);
-    chat.scrollTop = chat.scrollHeight;
-    return div;
+input.value = "";
+
+chat.scrollTop = chat.scrollHeight;
+
 }
 
-async function askQuestion(){
+document
+.getElementById("question")
+.addEventListener("keydown", function(e){
 
-    const input = document.getElementById("question");
-    const btn = document.getElementById("askBtn");
-    const question = input.value.trim();
-
-    if(question === "") return;
-
-    // Clear box right away and lock the button
-    input.value = "";
-    btn.disabled = true;
-
-    addMessage(question, "user");
-    const botBubble = addMessage("🔍 Searching...", "bot");
-
-    try {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 10000);
-
-        const response = await fetch(WORKER_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ question: question }),
-            signal: controller.signal
-        });
-
-        clearTimeout(timeout);
-
-        if(!response.ok) throw new Error("Bad response");
-
-        const data = await response.json();
-
-        if(!data.answer) throw new Error("No answer");
-
-        botBubble.textContent = data.answer;
-    }
-    catch(err){
-        // Worker failed, so use the offline answers
-        botBubble.textContent = getAnswer(question);
-    }
-
-    btn.disabled = false;
-    input.focus();
-    document.getElementById("chat").scrollTop =
-        document.getElementById("chat").scrollHeight;
+if(e.key === "Enter"){
+askQuestion();
 }
 
-document.getElementById("question").addEventListener("keydown", function(event){
-    if(event.key === "Enter"){
-        askQuestion();
-    }
 });
 
 </script>
